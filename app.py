@@ -37,7 +37,12 @@ try:
         production, sales = clean_production(p), clean_sales(s)
         products = ensure_products(pr, production, sales)
     else:
-        st.info("👈 Upload your production and sales files, or click **Use sample data** to start.")
+               st.markdown("### From scattered spreadsheets to one live view")
+        a, b, c = st.columns(3)
+        a.markdown("**1️⃣ Upload**  \nDrop in your production and sales files (CSV or Excel). Column names don't have to match.")
+        b.markdown("**2️⃣ Unify**  \nWe clean and merge them, then calculate defect rate, availability, on-time delivery and revenue lost to downtime.")
+        c.markdown("**3️⃣ Ask**  \nSee operations and sales together, then ask the AI analyst what to fix first.")
+        st.info("👈 Upload your files, or click **Use sample data** in the sidebar to see it in action.")
         st.stop()
 except ValueError as e:
     st.error(str(e))
@@ -90,7 +95,7 @@ with tab1:
     c4.metric("Revenue", f"₹{revenue:,.0f}")
     c5.metric("On-time delivery", f"{on_time:.1%}")
     m_rev = sales_f.groupby("month", as_index=False)["revenue"].sum()
-    st.plotly_chart(px.line(m_rev, x="month", y="revenue", markers=True, title="Monthly revenue"), width="stretch")
+    st.plotly_chart(px.line(m_rev, x="month", y="revenue", markers=True, title=f"Monthly revenue: peaked in {m_rev.loc[m_rev['revenue'].idxmax(), 'month']:%b %Y}"), width="stretch")
     m_units = prod_f.groupby("month", as_index=False)["units_produced"].sum()
     st.plotly_chart(px.line(m_units, x="month", y="units_produced", markers=True, title="Monthly units produced"), width="stretch")
 
@@ -102,7 +107,8 @@ with tab2:
     )
     by_machine["defect_rate_%"] = (by_machine["defective"] / by_machine["units"] * 100).round(2)
     a, b = st.columns(2)
-    a.plotly_chart(px.bar(by_machine, x="machine_id", y="downtime_hours", title="Downtime hours by machine"), width="stretch")
+        worst = by_machine.sort_values("downtime_hours", ascending=False).iloc[0]
+    a.plotly_chart(px.bar(by_machine, x="machine_id", y="downtime_hours", title=f"{worst['machine_id']} has the most downtime ({worst['downtime_hours']:,.0f} hours)"), width="stretch")
     reasons = prod_f[prod_f["downtime_reason"] != "None"].groupby("downtime_reason", as_index=False)["downtime_hours"].sum()
     b.plotly_chart(px.bar(reasons, x="downtime_reason", y="downtime_hours", title="Downtime by reason"), width="stretch")
     m_def = prod_f.groupby("month", as_index=False).agg(d=("defective_units", "sum"), u=("units_produced", "sum"))
@@ -130,10 +136,10 @@ with tab4:
     both = pm.merge(sm, on="month", how="outer").melt("month", var_name="measure", value_name="units")
     st.plotly_chart(px.line(both, x="month", y="units", color="measure", markers=True, title="Production vs customer orders"), width="stretch")
     a, b = st.columns(2)
-    a.plotly_chart(px.bar(lost, x="product", y="lost_revenue", title="Estimated revenue lost to downtime (₹)"), width="stretch")
+    a.plotly_chart(px.bar(lost, x="product", y="lost_revenue",title=f"₹{lost['lost_revenue'].sum():,.0f} estimated revenue lost to downtime"), width="stretch")
     late = sales_f.groupby("product", as_index=False)["late"].mean()
     late["late_%"] = late["late"] * 100
-    b.plotly_chart(px.bar(late, x="product", y="late_%", title="Late deliveries by product (%)"), width="stretch")
+    b.plotly_chart(px.bar(late, x="product", y="late_%", title=f"{late.sort_values('late_%').iloc[-1]['product']} has the highest late-delivery rate (%)""), width="stretch")
     st.caption("Lost revenue = downtime hours × units per run-hour × average revenue per unit (an estimate).")
 
 with tab5:
@@ -232,4 +238,5 @@ with tab5:
     res = st.session_state.get("ai_result")
     if res:
         st.markdown(f"**Q:** {res['q']}")
-        st.markdown(res["a"])
+                st.markdown(res["a"])
+        st.download_button("⬇️ Download this insight", f"Q: {res['q']}\n\n{res['a']}", file_name="insights.txt")
