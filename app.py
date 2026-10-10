@@ -110,6 +110,24 @@ section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
 .stButton > button:hover{border-color:var(--teal);color:var(--teal)}
 .stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:1px solid var(--teal)}
 @media (max-width: 1000px){.kgrid{grid-template-columns:repeat(2,1fr)}.fgrid,.steps{grid-template-columns:1fr}.phead{flex-direction:column;align-items:flex-start}.pdesc{text-align:left}.sstats{display:none}}
+
+/* ---- Sidebar type scale (Poppins, small and crisp) ---- */
+section[data-testid="stSidebar"] small, section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span:not([data-testid="stIconMaterial"]), section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] div{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
+section[data-testid="stSidebar"] .btile{width:40px;height:40px;font-size:1.15rem;border-radius:11px}
+section[data-testid="stSidebar"] .bname{font-size:1.08rem;font-weight:700}
+section[data-testid="stSidebar"] .bsub{font-size:.56rem;letter-spacing:.18em;font-weight:500}
+section[data-testid="stSidebar"] .sidelabel{font-size:.6rem;letter-spacing:.2em;font-weight:600}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button{min-height:2.55rem;padding:.25rem .55rem;color:#55657E}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button p{font-size:.86rem;font-weight:500;letter-spacing:0}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button [data-testid="stIconMaterial"]{width:30px;height:30px;font-size:17px}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"] p, section[data-testid="stSidebar"] .st-key-nav .stButton > button[data-testid="stBaseButton-primary"] p{font-size:.86rem;font-weight:600;color:#fff}
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p, section[data-testid="stSidebar"] label p{font-size:.8rem;font-weight:500;color:#55657E}
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button{font-size:.8rem;font-weight:500;padding:.3rem .8rem}
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] span, section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] small, section[data-testid="stSidebar"] small{font-size:.7rem;color:#8B96A5}
+section[data-testid="stSidebar"] .stButton:not(.st-key-nav .stButton) > button p{font-size:.84rem;font-weight:500}
+section[data-testid="stSidebar"] input, section[data-testid="stSidebar"] [data-baseweb="select"] div{font-size:.84rem}
+section[data-testid="stSidebar"] .uname{font-size:.92rem;font-weight:600}
+section[data-testid="stSidebar"] .urole{font-size:.55rem;letter-spacing:.16em;font-weight:600}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
