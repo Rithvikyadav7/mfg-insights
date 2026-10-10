@@ -10,56 +10,90 @@ from utils import (clean_production, clean_sales, ensure_products,
 st.set_page_config(page_title="OpsView", page_icon="🏭", layout="wide")
 
 # ---------- Design tokens ----------
-INK, STEEL, LINE, GRID = "#16202E", "#51657D", "#D5DCE4", "#E3E8ED"
-BLUE, ORANGE = "#2F6690", "#F26B1D"
-COLORWAY = [BLUE, INK, "#8FA3B8"]
+INK, MUTED, LINE, GRID = "#1B2430", "#6B7787", "#EEE8E2", "#EFEAE5"
+TEAL, CORAL, NAVY = "#0F9D8A", "#E5533D", "#2B3A55"
+COLORWAY = [TEAL, NAVY, "#9FB3C8"]
+PAGES = ["Overview", "Operations", "Sales", "Connected insights", "AI analyst"]
+ICONS = {"Overview": "📊", "Operations": "⚙️", "Sales": "💰", "Connected insights": "🔗", "AI analyst": "🤖"}
+DESCRIPTIONS = {
+    "Overview": "Plant health at a glance, with what needs attention first.",
+    "Operations": "Machine downtime, causes and quality, worst first.",
+    "Sales": "Revenue by region and product, with the trend.",
+    "Connected insights": "Where problems on the factory floor show up in the business.",
+    "AI analyst": "Ask in plain language and get numbers and next actions.",
+}
 
 CSS = """
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Semi+Condensed:wght@500;600;700&display=swap');
-:root{--paper:#F2F4F6;--ink:#16202E;--steel:#51657D;--line:#D5DCE4;--blue:#2F6690;--orange:#F26B1D;--ok:#2E8B57}
-.stApp, .stApp p, .stApp label, .stApp li, .stApp input, .stApp button, .stApp textarea{font-family:'Barlow','Segoe UI',system-ui,sans-serif}
-.stApp h1, .stApp h2, .stApp h3, .stApp h4{font-family:'Barlow Semi Condensed','Barlow',sans-serif;color:var(--ink);letter-spacing:-0.01em}
-.stApp{background:var(--paper)}
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+:root{--ink:#1B2430;--muted:#6B7787;--line:#EEE8E2;--teal:#0F9D8A;--mint:#E3F6F2;--coral:#E5533D;--coralbg:#FDEBE7}
+.stApp, .stApp p, .stApp label, .stApp li, .stApp input, .stApp button, .stApp textarea, .stApp h1, .stApp h2, .stApp h3, .stApp h4{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
+.stApp{background:radial-gradient(900px 520px at 100% -5%, rgba(255,205,175,.50), transparent 62%), #F8F5F2}
 header[data-testid="stHeader"]{background:transparent}
 footer{visibility:hidden}
-.block-container{padding-top:1.6rem;padding-bottom:3rem;max-width:1380px}
-section[data-testid="stSidebar"]{background:#E9EDF1;border-right:1px solid var(--line)}
-.hazard{height:10px;border-radius:2px;background:repeating-linear-gradient(-45deg,#F26B1D 0 12px,#16202E 12px 24px);margin-bottom:18px}
-.title{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:3.1rem;line-height:1;color:var(--ink);letter-spacing:-0.02em}
-.tagline{color:var(--steel);font-size:1.15rem;margin:8px 0 6px}
-.source{font-size:.95rem;color:var(--steel);margin-bottom:18px}
-.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:8px;background:#9AA9BB}
-.dot.ok{background:var(--ok)}
-.dot.bad{background:var(--orange)}
-.strip{display:grid;grid-template-columns:repeat(5,1fr);background:#fff;border:1px solid var(--line);border-radius:6px;margin:6px 0 22px}
-.cell{padding:16px 20px;border-left:1px solid var(--line)}
-.cell:first-child{border-left:0}
-.lab{font-size:.95rem;color:var(--steel);font-weight:500}
-.val{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:2.3rem;line-height:1.15;color:var(--ink);font-variant-numeric:tabular-nums}
-.sub{font-size:.88rem;color:var(--steel);margin-top:2px}
-.flags{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border:1px solid var(--line);border-radius:6px;margin:6px 0 22px}
-.flag{padding:14px 20px;border-left:4px solid var(--orange)}
-.flag + .flag{border-left:1px solid var(--line);box-shadow:inset 4px 0 0 var(--orange)}
-.flag-t{font-size:.92rem;color:var(--steel);font-weight:500}
-.flag-h{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:1.5rem;color:var(--ink);line-height:1.2}
-.flag-s{font-size:.9rem;color:var(--steel)}
-.steps{display:grid;grid-template-columns:repeat(3,1fr);background:#fff;border:1px solid var(--line);border-radius:6px;margin:10px 0 18px}
-.step{padding:20px 24px;border-left:1px solid var(--line)}
-.step:first-child{border-left:0}
-.step-n{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;font-size:2rem;color:var(--blue);line-height:1}
-.step-t{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:1.3rem;color:var(--ink);margin:6px 0 4px}
-.step-p{color:var(--steel);font-size:1rem}
-.note{color:var(--steel);font-size:.9rem;margin-top:24px}
-.stTabs [data-baseweb="tab-list"]{gap:26px;border-bottom:1px solid var(--line)}
-.stTabs [data-baseweb="tab"]{padding:10px 2px;height:auto;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:1.15rem;color:var(--steel)}
-.stTabs [aria-selected="true"]{color:var(--ink)}
-.stTabs [data-baseweb="tab-highlight"]{background:var(--ink);height:3px}
-[data-testid="stPlotlyChart"]{background:#fff;border:1px solid var(--line);border-radius:6px;padding:6px 8px}
-.stButton > button{border-radius:6px;border:1px solid #AEB9C6;background:#fff;color:var(--ink);font-weight:600}
-.stButton > button:hover{border-color:var(--ink);color:var(--ink)}
-.stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{background:var(--ink);color:#fff;border:1px solid var(--ink)}
-@media (max-width: 900px){.strip{grid-template-columns:repeat(2,1fr)}.flags,.steps{grid-template-columns:1fr}.cell{border-top:1px solid var(--line)}}
+.block-container{padding-top:1.2rem;padding-bottom:3rem;max-width:1400px}
+section[data-testid="stSidebar"]{background:#FFFFFF;border-right:1px solid var(--line)}
+section[data-testid="stSidebar"] .block-container{padding-top:1.4rem}
+
+.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
+.btile{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
+.bname{font-weight:700;font-size:1.2rem;color:var(--ink);line-height:1.1}
+.bsub{font-size:.62rem;letter-spacing:.14em;color:var(--muted);font-weight:500;margin-top:3px}
+.sidelabel{font-size:.68rem;letter-spacing:.14em;color:#8B96A5;font-weight:600;margin:20px 0 8px}
+
+.st-key-nav button{width:100%;justify-content:flex-start;border:0;box-shadow:none;background:transparent;padding:.7rem .9rem;border-radius:12px;color:var(--ink)}
+.st-key-nav button:hover{background:#F3EEE9;color:var(--ink);border:0}
+.st-key-nav button > div{justify-content:flex-start;width:100%}
+.st-key-nav button p{text-align:left;font-weight:500;font-size:.95rem}
+.st-key-nav button[kind="primary"], .st-key-nav button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:0}
+.st-key-nav button[kind="primary"] p, .st-key-nav button[data-testid="stBaseButton-primary"] p{color:#fff;font-weight:600}
+
+.topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 2px 16px;border-bottom:1px solid var(--line);margin-bottom:24px}
+.tsmall{font-size:.82rem;color:var(--muted)}
+.tbig{font-weight:600;font-size:1.1rem;color:var(--ink)}
+.phead{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:18px}
+.eyebrow{font-size:.72rem;letter-spacing:.16em;color:var(--coral);font-weight:600}
+.ptitle{font-weight:700;font-size:2.1rem;color:var(--ink);line-height:1.2;letter-spacing:-0.01em}
+.pdesc{color:var(--muted);font-size:.98rem;max-width:380px;text-align:right}
+
+.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:.76rem;font-weight:600;background:#F0EDEA;color:#59636F}
+.pill.ok{background:var(--mint);color:#0B7F6F}
+.pill.bad{background:var(--coralbg);color:#C93E2A}
+.pdot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);padding:18px 22px}
+.summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);margin-bottom:20px}
+.sleft{display:flex;align-items:center;gap:16px;padding:18px 22px}
+.sname{font-weight:600;font-size:1.25rem;color:var(--ink);display:flex;align-items:center;gap:10px}
+.ssub{font-size:.88rem;color:var(--muted)}
+.sstats{display:flex}
+.sstat{padding:18px 30px;border-left:1px solid var(--line)}
+.slab{font-size:.68rem;letter-spacing:.12em;color:#8B96A5;font-weight:600}
+.sval{font-size:1.02rem;font-weight:500;color:var(--ink);margin-top:4px}
+
+.kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:22px}
+.khead{display:flex;justify-content:space-between;align-items:center}
+.klab{font-size:.86rem;color:var(--muted);font-weight:500}
+.chip{width:30px;height:30px;border-radius:9px;background:var(--mint);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.kval{font-weight:600;font-size:1.75rem;color:var(--ink);margin:10px 0 10px;font-variant-numeric:tabular-nums;letter-spacing:-0.01em}
+.fgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:22px}
+.card-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.card-t{font-weight:600;font-size:.98rem;color:var(--ink)}
+.fh{font-weight:600;font-size:1.25rem;color:var(--ink);line-height:1.3}
+.fs{font-size:.88rem;color:var(--muted);margin-top:4px}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:6px 0 18px}
+.snum{width:38px;height:38px;border-radius:11px;background:var(--mint);color:#0B7F6F;font-weight:700;display:flex;align-items:center;justify-content:center;margin-bottom:12px}
+.step-t{font-weight:600;font-size:1.1rem;color:var(--ink);margin-bottom:4px}
+.step-p{color:var(--muted);font-size:.93rem;line-height:1.5}
+.note{color:var(--muted);font-size:.9rem;margin-top:8px}
+
+[data-testid="stPlotlyChart"]{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);padding:8px 10px}
+[data-testid="stDataFrame"]{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+[data-testid="stFileUploaderDropzone"]{background:#FBF9F7;border:1px dashed #DCD3CA;border-radius:14px}
+.stButton > button{border-radius:12px;border:1px solid #E4DCD3;background:#fff;color:var(--ink);font-weight:500}
+.stButton > button:hover{border-color:var(--teal);color:var(--teal)}
+.stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:1px solid var(--teal)}
+@media (max-width: 1000px){.kgrid{grid-template-columns:repeat(2,1fr)}.fgrid,.steps{grid-template-columns:1fr}.phead{flex-direction:column;align-items:flex-start}.pdesc{text-align:left}.sstats{display:none}}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -69,45 +103,74 @@ st.markdown(CSS, unsafe_allow_html=True)
 def style(fig, height=360, money=False):
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
-        font=dict(family="Barlow, Segoe UI, sans-serif", color=INK, size=14),
-        title=dict(x=0.0, xanchor="left",
-                   font=dict(family="Barlow Semi Condensed, Barlow, sans-serif", size=20, color=INK)),
+        font=dict(family="Poppins, Segoe UI, sans-serif", color=INK, size=13),
+        title=dict(x=0.0, xanchor="left", font=dict(size=17, color=INK)),
         margin=dict(l=12, r=12, t=58, b=12), height=height, colorway=COLORWAY,
         legend=dict(orientation="h", y=1.1, x=1, xanchor="right", title_text=""),
         hoverlabel=dict(bgcolor="#FFFFFF", font_color=INK, bordercolor=LINE),
     )
-    fig.update_xaxes(title_text="", showgrid=False, linecolor=LINE, tickfont=dict(color=STEEL))
-    fig.update_yaxes(title_text="", gridcolor=GRID, zeroline=False, tickfont=dict(color=STEEL))
+    fig.update_xaxes(title_text="", showgrid=False, linecolor=LINE, tickfont=dict(color=MUTED))
+    fig.update_yaxes(title_text="", gridcolor=GRID, zeroline=False, tickfont=dict(color=MUTED))
     if money:
         fig.update_yaxes(tickprefix="₹", tickformat="~s")
     fig.update_traces(line_width=3, marker_size=7, selector=dict(type="scatter"))
-    fig.update_traces(marker_color=BLUE, selector=dict(type="bar"))
+    fig.update_traces(marker_color=TEAL, selector=dict(type="bar"))
     return fig
 
 
 def show(fig, height=360, money=False, flag=None):
-    """flag=(labels, target) paints the matching bar safety-orange."""
+    """flag=(labels, target) paints the matching bar coral."""
     style(fig, height, money)
     if flag is not None:
         labels, target = flag
-        fig.update_traces(marker_color=[ORANGE if x == target else BLUE for x in labels],
+        fig.update_traces(marker_color=[CORAL if x == target else TEAL for x in labels],
                           selector=dict(type="bar"))
     st.plotly_chart(fig, width="stretch")
 
 
-def kpi_cell(label, value, sub, status="info"):
-    return (f'<div class="cell"><div class="lab">{label}</div><div class="val">{value}</div>'
-            f'<div class="sub"><span class="dot {status}"></span>{sub}</div></div>')
+def pill(text, kind="info", dot=True):
+    d = '<span class="pdot"></span>' if dot else ""
+    return f'<span class="pill {kind}">{d}{text}</span>'
 
 
-def flag_cell(title, headline, sub):
-    return (f'<div class="flag"><div class="flag-t">{title}</div>'
-            f'<div class="flag-h">{headline}</div><div class="flag-s">{sub}</div></div>')
+def kpi_card(icon, label, value, sub, kind="info"):
+    return (f'<div class="card"><div class="khead"><span class="klab">{label}</span><span class="chip">{icon}</span></div>'
+            f'<div class="kval">{value}</div>{pill(sub, kind)}</div>')
 
 
-def step_cell(n, title, text):
-    return (f'<div class="step"><div class="step-n">{n}</div>'
-            f'<div class="step-t">{title}</div><div class="step-p">{text}</div></div>')
+def flag_card(title, headline, sub):
+    return (f'<div class="card"><div class="card-h"><span class="card-t">{title}</span>{pill("Flagged", "bad")}</div>'
+            f'<div class="fh">{headline}</div><div class="fs">{sub}</div></div>')
+
+
+def step_card(n, title, text):
+    return (f'<div class="card"><div class="snum">{n}</div><div class="step-t">{title}</div>'
+            f'<div class="step-p">{text}</div></div>')
+
+
+def topbar(kind, text):
+    st.markdown(
+        '<div class="topbar"><div><div class="tsmall">Analytics workspace</div>'
+        '<div class="tbig">Factory operations and sales</div></div>'
+        f'<div>{pill(text, kind)}</div></div>', unsafe_allow_html=True)
+
+
+def page_header(title):
+    st.markdown(
+        f'<div class="phead"><div><div class="eyebrow">OPERATIONS DASHBOARD</div><div class="ptitle">{title}</div></div>'
+        f'<div class="pdesc">{DESCRIPTIONS[title]}</div></div>', unsafe_allow_html=True)
+
+
+def summary_card(badge_kind, badge_text, period, n_machines, n_products):
+    st.markdown(
+        '<div class="summary"><div class="sleft"><div class="btile">O</div><div>'
+        f'<div class="sname">OpsView {pill(badge_text, badge_kind)}</div>'
+        '<div class="ssub">Manufacturing and sales analytics</div></div></div>'
+        '<div class="sstats">'
+        f'<div class="sstat"><div class="slab">PERIOD</div><div class="sval">{period}</div></div>'
+        f'<div class="sstat"><div class="slab">MACHINES</div><div class="sval">{n_machines}</div></div>'
+        f'<div class="sstat"><div class="slab">PRODUCTS</div><div class="sval">{n_products}</div></div>'
+        '</div></div>', unsafe_allow_html=True)
 
 
 def read_any(f):
@@ -116,9 +179,21 @@ def read_any(f):
     return pd.read_csv(f)
 
 
-# ---------- Sidebar: data ----------
+def go(p):
+    st.session_state["page"] = p
+
+
+# ---------- Sidebar: brand, navigation, data ----------
+page = st.session_state.get("page", "Overview")
 with st.sidebar:
-    st.header("1. Data")
+    st.markdown('<div class="brand"><div class="btile">O</div><div><div class="bname">OpsView</div>'
+                '<div class="bsub">MANUFACTURING ANALYTICS</div></div></div>'
+                '<div class="sidelabel">NAVIGATION</div>', unsafe_allow_html=True)
+    with st.container(key="nav"):
+        for p_name in PAGES:
+            st.button(f"{ICONS[p_name]}  {p_name}", key=f"nav_{p_name}",
+                      type="primary" if page == p_name else "secondary", on_click=go, args=(p_name,))
+    st.markdown('<div class="sidelabel">DATA</div>', unsafe_allow_html=True)
     prod_file = st.file_uploader("Production file (CSV/Excel)", type=["csv", "xlsx", "xls"])
     sales_file = st.file_uploader("Sales file (CSV/Excel)", type=["csv", "xlsx", "xls"])
     cat_file = st.file_uploader("Products file (optional)", type=["csv", "xlsx", "xls"])
@@ -128,16 +203,12 @@ with st.sidebar:
 using_upload = bool(prod_file and sales_file)
 using_sample = (not using_upload) and st.session_state.get("use_sample", False)
 if using_upload:
-    source_line = '<span class="dot ok"></span>Showing your uploaded files'
+    src_kind, src_text = "ok", "Your uploaded files"
 elif using_sample:
-    source_line = '<span class="dot"></span>Showing simulated sample data'
+    src_kind, src_text = "info", "Simulated sample data"
 else:
-    source_line = ""
-
-st.markdown('<div class="hazard"></div>'
-            '<div class="title">OpsView</div>'
-            '<div class="tagline">Factory and sales data in one view, with an AI analyst that tells you what to fix first.</div>'
-            f'<div class="source">{source_line}</div>', unsafe_allow_html=True)
+    src_kind, src_text = "info", "No data loaded yet"
+topbar(src_kind, src_text)
 
 try:
     if using_upload:
@@ -150,12 +221,13 @@ try:
         products = ensure_products(pr, production, sales)
     else:
         st.markdown(
+            '<div class="phead"><div><div class="eyebrow">GET STARTED</div>'
+            '<div class="ptitle">From scattered files to one view</div></div></div>'
             '<div class="steps">'
-            + step_cell("1", "Upload your files", "Production and sales, as CSV or Excel. Column names don't need to match.")
-            + step_cell("2", "See one view", "We clean and merge them, then work out defect rate, availability, on-time delivery and revenue lost to downtime.")
-            + step_cell("3", "Ask the analyst", "Get the top issues and what to fix first, in plain language.")
-            + '</div>'
-            '<div class="note">No files handy? Choose Use sample data in the sidebar.</div>',
+            + step_card("1", "Upload your files", "Production and sales, as CSV or Excel. Column names don't need to match.")
+            + step_card("2", "See one view", "We clean and merge them, then work out defect rate, availability, on-time delivery and revenue lost to downtime.")
+            + step_card("3", "Ask the analyst", "Get the top issues and what to fix first, in plain language.")
+            + '</div><div class="note">No files handy? Choose Use sample data in the sidebar.</div>',
             unsafe_allow_html=True,
         )
         st.stop()
@@ -169,7 +241,7 @@ sales["product"] = sales["product_id"].map(name_map).fillna(sales["product_id"])
 
 # ---------- Sidebar: filters ----------
 with st.sidebar:
-    st.header("2. Filters")
+    st.markdown('<div class="sidelabel">FILTERS</div>', unsafe_allow_html=True)
     min_d = min(production["date"].min(), sales["order_date"].min()).date()
     max_d = max(production["date"].max(), sales["order_date"].max()).date()
     date_range = st.date_input("Date range", (min_d, max_d))
@@ -211,42 +283,40 @@ late = sales_f.groupby("product", as_index=False)["late"].mean()
 late["late_%"] = late["late"] * 100
 late_row = late.sort_values("late_%", ascending=False).iloc[0]
 
-tab1, tab2, tab3, tab4, tab5 = st.tabs(
-    ["Overview", "Operations", "Sales", "Connected insights", "AI analyst"]
-)
+# ---------- Page frame ----------
+page_header(page)
+summary_card("ok" if using_upload else "info", "Your data" if using_upload else "Sample data",
+             f"{start:%d %b %Y} to {end:%d %b %Y}", len(by_machine), len(chosen))
 
 # ---------- Overview ----------
-with tab1:
+if page == "Overview":
     st.markdown(
-        '<div class="strip">'
-        + kpi_cell("Units produced", f"{units:,.0f}", f"{len(by_machine)} machines")
-        + kpi_cell("Defect rate", f"{defect_rate:.1%}",
-                   "Within the 2.5% target" if defect_rate <= 0.025 else "Above the 2.5% target",
+        '<div class="kgrid">'
+        + kpi_card("🏭", "Units produced", f"{units:,.0f}", f"{len(by_machine)} machines")
+        + kpi_card("⚠️", "Defect rate", f"{defect_rate:.1%}",
+                   "Within 2.5% target" if defect_rate <= 0.025 else "Above 2.5% target",
                    "ok" if defect_rate <= 0.025 else "bad")
-        + kpi_cell("Machine availability", f"{availability:.1%}",
-                   "Above the 90% target" if availability >= 0.9 else "Below the 90% target",
+        + kpi_card("⚙️", "Machine availability", f"{availability:.1%}",
+                   "Above 90% target" if availability >= 0.9 else "Below 90% target",
                    "ok" if availability >= 0.9 else "bad")
-        + kpi_cell("Revenue", f"₹{revenue:,.0f}", "Selected period")
-        + kpi_cell("On-time delivery", f"{on_time:.1%}",
-                   "Above the 90% target" if on_time >= 0.9 else "Below the 90% target",
+        + kpi_card("💰", "Revenue", f"₹{revenue:,.0f}", "Selected period")
+        + kpi_card("🚚", "On-time delivery", f"{on_time:.1%}",
+                   "Above 90% target" if on_time >= 0.9 else "Below 90% target",
                    "ok" if on_time >= 0.9 else "bad")
         + '</div>',
         unsafe_allow_html=True,
     )
-
-    st.subheader("Needs attention")
     st.markdown(
-        '<div class="flags">'
-        + flag_cell("Downtime hotspot", f"{worst_row['machine_id']} lost {worst_row['downtime_hours']:,.0f} hours",
+        '<div class="fgrid">'
+        + flag_card("Downtime hotspot", f"{worst_row['machine_id']} lost {worst_row['downtime_hours']:,.0f} hours",
                     "Most downtime of any machine")
-        + flag_cell("Quality hotspot", f"{quality_row['machine_id']} at {quality_row['defect_rate_%']:.1f}% defects",
+        + flag_card("Quality hotspot", f"{quality_row['machine_id']} at {quality_row['defect_rate_%']:.1f}% defects",
                     f"Plant average is {defect_rate:.1%}")
-        + flag_cell("Delivery risk", f"{late_row['product']}: {late_row['late_%']:.0f}% late",
+        + flag_card("Delivery risk", f"{late_row['product']}: {late_row['late_%']:.0f}% late",
                     "Highest late-delivery rate")
         + '</div>',
         unsafe_allow_html=True,
     )
-
     m_rev = sales_f.groupby("month", as_index=False)["revenue"].sum()
     peak_month = m_rev.loc[m_rev["revenue"].idxmax(), "month"]
     m_units = prod_f.groupby("month", as_index=False)["units_produced"].sum()
@@ -258,7 +328,7 @@ with tab1:
         show(px.line(m_units, x="month", y="units_produced", markers=True, title="Monthly units produced"))
 
 # ---------- Operations ----------
-with tab2:
+elif page == "Operations":
     left, right = st.columns(2)
     with left:
         show(px.bar(by_machine, x="machine_id", y="downtime_hours",
@@ -279,7 +349,7 @@ with tab2:
     m_def["defect_rate_%"] = m_def["d"] / m_def["u"].replace(0, 1) * 100
     show(px.line(m_def, x="month", y="defect_rate_%", markers=True, title="Defect rate by month (%)"))
 
-    st.subheader("Machines, worst first")
+    st.markdown("#### Machines, worst first")
     table = by_machine.sort_values("downtime_hours", ascending=False).rename(columns={
         "machine_id": "Machine", "downtime_hours": "Downtime (h)", "defective": "Defective units",
         "units": "Units", "defect_rate_%": "Defect rate (%)",
@@ -287,7 +357,7 @@ with tab2:
     st.dataframe(table, width="stretch", hide_index=True)
 
 # ---------- Sales ----------
-with tab3:
+elif page == "Sales":
     reg = sales_f.groupby("region", as_index=False)["revenue"].sum()
     top = sales_f.groupby("product", as_index=False)["revenue"].sum().sort_values("revenue", ascending=False)
     left, right = st.columns(2)
@@ -298,13 +368,12 @@ with tab3:
 
     m_rev2 = sales_f.groupby("month", as_index=False)["revenue"].sum()
     fig = px.scatter(m_rev2, x="month", y="revenue", trendline="ols", title="Revenue by month with trendline")
-    fig.update_traces(marker_color=BLUE, selector=dict(mode="markers"))
-    fig.update_traces(line_color=INK, line_dash="dash", selector=dict(mode="lines"))
+    fig.update_traces(marker_color=TEAL, selector=dict(mode="markers"))
+    fig.update_traces(line_color=NAVY, line_dash="dash", selector=dict(mode="lines"))
     show(fig, money=True)
 
 # ---------- Connected insights ----------
-with tab4:
-    st.markdown("Where problems on the factory floor show up in the business.")
+elif page == "Connected insights":
     pm = prod_f.groupby("month", as_index=False).agg(units_produced=("units_produced", "sum"))
     sm = sales_f.groupby("month", as_index=False).agg(units_ordered=("quantity", "sum"))
     both = pm.merge(sm, on="month", how="outer").melt("month", var_name="measure", value_name="units")
@@ -323,10 +392,7 @@ with tab4:
     st.caption("Lost revenue = downtime hours × units per run-hour × average revenue per unit. It is an estimate.")
 
 # ---------- AI analyst ----------
-with tab5:
-    st.subheader("Ask the analyst")
-    st.caption("Answers use the data currently shown, so your filters apply.")
-
+else:
     MODEL_NAME = "gemini-3.8-flash"
     FALLBACK_MODEL = "gemini-3-flash-preview"
     SYSTEM = (
@@ -395,6 +461,7 @@ with tab5:
         with st.spinner("Analysing your data..."):
             st.session_state["ai_result"] = {"q": question, "a": ask_ai(question)}
 
+    st.caption("Answers use the data currently shown, so your filters apply.")
     examples = [
         "Which machine is costing us the most?",
         "Why did output drop in March 2026?",
@@ -419,10 +486,6 @@ with tab5:
 
     res = st.session_state.get("ai_result")
     if res:
-        with st.container(border=True):
-            st.markdown(f"**{res['q']}**")
-            st.markdown(res["a"])
-        st.download_button("Download this answer", f"Q: {res['q']}\n\n{res['a']}", file_name="insights.txt")
         with st.container(border=True):
             st.markdown(f"**{res['q']}**")
             st.markdown(res["a"])
