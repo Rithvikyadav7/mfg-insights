@@ -7,7 +7,7 @@ from google.genai import types
 from utils import (clean_production, clean_sales, ensure_products,
                    generate_sample_data, lost_revenue_by_product)
 
-st.set_page_config(page_title="MfgInsights", page_icon="🏭", layout="wide")
+st.set_page_config(page_title="OpsView", page_icon="🏭", layout="wide")
 
 # ---------- Design tokens ----------
 INK, STEEL, LINE, GRID = "#16202E", "#51657D", "#D5DCE4", "#E3E8ED"
@@ -135,7 +135,7 @@ else:
     source_line = ""
 
 st.markdown('<div class="hazard"></div>'
-            '<div class="title">MfgInsights</div>'
+            '<div class="title">OpsView</div>'
             '<div class="tagline">Factory and sales data in one view, with an AI analyst that tells you what to fix first.</div>'
             f'<div class="source">{source_line}</div>', unsafe_allow_html=True)
 
@@ -419,6 +419,10 @@ with tab5:
 
     res = st.session_state.get("ai_result")
     if res:
+        with st.container(border=True):
+            st.markdown(f"**{res['q']}**")
+            st.markdown(res["a"])
+        st.download_button("Download this answer", f"Q: {res['q']}\n\n{res['a']}", file_name="insights.txt")
         with st.container(border=True):
             st.markdown(f"**{res['q']}**")
             st.markdown(res["a"])
