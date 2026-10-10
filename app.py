@@ -138,12 +138,23 @@ with tab4:
     pm = prod_f.groupby("month", as_index=False).agg(units_produced=("units_produced", "sum"))
     sm = sales_f.groupby("month", as_index=False).agg(units_ordered=("quantity", "sum"))
     both = pm.merge(sm, on="month", how="outer").melt("month", var_name="measure", value_name="units")
-    st.plotly_chart(px.line(both, x="month", y="units", color="measure", markers=True, title="Production vs customer orders"), width="stretch")
+    st.plotly_chart(
+        px.line(both, x="month", y="units", color="measure", markers=True, title="Production vs customer orders"),
+        width="stretch",
+    )
     a, b = st.columns(2)
-    a.plotly_chart(px.bar(lost, x="product", y="lost_revenue",title=f"₹{lost['lost_revenue'].sum():,.0f} estimated revenue lost to downtime"), width="stretch")
+    total_lost = lost["lost_revenue"].sum()
+    a.plotly_chart(
+        px.bar(lost, x="product", y="lost_revenue", title=f"₹{total_lost:,.0f} estimated revenue lost to downtime"),
+        width="stretch",
+    )
     late = sales_f.groupby("product", as_index=False)["late"].mean()
     late["late_%"] = late["late"] * 100
-    b.plotly_chart(px.bar(late, x="product", y="late_%", title=f"{late.sort_values('late_%').iloc[-1]['product']} has the highest late-delivery rate (%)""), width="stretch")
+    top_late = late.sort_values("late_%").iloc[-1]["product"]
+    b.plotly_chart(
+        px.bar(late, x="product", y="late_%", title=f"{top_late} has the highest late-delivery rate (%)"),
+        width="stretch",
+    )
     st.caption("Lost revenue = downtime hours × units per run-hour × average revenue per unit (an estimate).")
 
 with tab5:
