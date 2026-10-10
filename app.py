@@ -1,6 +1,8 @@
 import pandas as pd
 import plotly.express as px
 import streamlit as st
+from google import genai
+from google.genai import types
 
 from utils import (clean_production, clean_sales, ensure_products,
                    generate_sample_data, lost_revenue_by_product)
@@ -135,4 +137,99 @@ with tab4:
     st.caption("Lost revenue = downtime hours × units per run-hour × average revenue per unit (an estimate).")
 
 with tab5:
-    st.info("AI Analyst comes in the next step.")
+    st.subheader("🤖 AI Analyst")
+    st.caption("Ask questions about the data currently shown (your filters apply).")
+
+    MODEL_NAME = "gemini-3.8-flash"
+    FALLBACK_MODEL = "gemini-3-flash-preview"
+    SYSTEM = (
+        "You are an expert manufacturing operations and sales analyst. "
+        "Answer ONLY from the data summary provided. Quote specific numbers, "
+        "name the machines/products/months involved, and keep answers concise "
+        "(under 200 words). End with 1-2 concrete recommended actions. "
+        "If the data does not contain the answer, say so clearly."
+    )
+
+    def build_summary():
+        m_prod = prod_f.groupby("month").agg(
+            units=("units_produced", "sum"),
+            downtime_hours=("downtime_hours", "sum"),
+            defective=("defective_units", "sum"),
+        ).round(1)
+        m_sales = sales_f.groupby("month").agg(
+            revenue=("revenue", "sum"),
+            orders=("quantity", "count"),
+            late_share=("late", "mean"),
+        ).round(2)
+        machines = prod_f.groupby("machine_id").agg(
+            downtime_hours=("downtime_hours", "sum"),
+            units=("units_produced", "sum"),
+            defective=("defective_units", "sum"),
+        )
+        machines["defect_rate_pct"] = (machines["defective"] / machines["units"] * 100).round(2)
+        reasons = prod_f[prod_f["downtime_reason"] != "None"].groupby("downtime_reason")["downtime_hours"].sum().round(1)
+        late_p = sales_f.groupby("product")["late"].mean().mul(100).round(1)
+        rev_p = sales_f.groupby("product")["revenue"].sum().round(0)
+        return (
+            f"OVERALL: units={units:,.0f}; defect_rate={defect_rate:.1%}; "
+            f"machine_availability={availability:.1%}; revenue=Rs{revenue:,.0f}; on_time_delivery={on_time:.1%}\n\n"
+            f"MONTHLY PRODUCTION:\n{m_prod.to_csv()}\n"
+            f"MONTHLY SALES:\n{m_sales.to_csv()}\n"
+            f"BY MACHINE:\n{machines.to_csv()}\n"
+            f"DOWNTIME HOURS BY REASON:\n{reasons.to_csv()}\n"
+            f"LATE DELIVERY % BY PRODUCT:\n{late_p.to_csv()}\n"
+            f"REVENUE BY PRODUCT:\n{rev_p.to_csv()}\n"
+            f"ESTIMATED REVENUE LOST TO DOWNTIME BY PRODUCT:\n{lost.round(0).to_csv(index=False)}\n"
+        )
+
+    def ask_ai(question):
+        try:
+            client = genai.Client(api_key=st.secrets["GEMINI_API_KEY"])
+        except Exception:
+            return "⚠️ AI key not found. Add GEMINI_API_KEY in the app's Secrets settings."
+        prompt = f"DATA SUMMARY:\n{build_summary()}\n\nQUESTION: {question}"
+        last_error = ""
+        for model in (MODEL_NAME, FALLBACK_MODEL):
+            try:
+                r = client.models.generate_content(
+                    model=model,
+                    contents=prompt,
+                    config=types.GenerateContentConfig(system_instruction=SYSTEM),
+                )
+                return r.text
+            except Exception as e:
+                last_error = str(e)
+        return f"⚠️ The AI is busy or unavailable right now. Please try again in a minute. ({last_error[:100]})"
+
+    def run(question):
+        with st.spinner("Analysing your data..."):
+            st.session_state["ai_result"] = {"q": question, "a": ask_ai(question)}
+
+    st.markdown("**Try a question:**")
+    examples = [
+        "Which machine is costing us the most?",
+        "Why did output drop in March 2026?",
+        "Which products are at risk of late delivery?",
+        "What should the plant manager fix first?",
+    ]
+    cols = st.columns(len(examples))
+    for i, (col, ex) in enumerate(zip(cols, examples)):
+        if col.button(ex, key=f"ex_{i}"):
+            run(ex)
+
+    typed = st.text_input("Or ask your own question", placeholder="e.g. Which region is growing fastest?")
+    if st.button("Ask") and typed.strip():
+        run(typed.strip())
+
+    st.divider()
+    if st.button("✨ Generate Top 5 Insights & Recommended Actions", type="primary"):
+        run(
+            "Give the top 5 insights from this data as a numbered list. For each, state the "
+            "evidence (numbers) and one recommended action. Cover operations, sales, and how "
+            "factory problems affect customer delivery and revenue."
+        )
+
+    res = st.session_state.get("ai_result")
+    if res:
+        st.markdown(f"**Q:** {res['q']}")
+        st.markdown(res["a"])
