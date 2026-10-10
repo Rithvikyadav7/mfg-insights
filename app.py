@@ -14,7 +14,9 @@ INK, MUTED, LINE, GRID = "#1B2430", "#6B7787", "#EEE8E2", "#EFEAE5"
 TEAL, CORAL, NAVY = "#0F9D8A", "#E5533D", "#2B3A55"
 COLORWAY = [TEAL, NAVY, "#9FB3C8"]
 PAGES = ["Overview", "Operations", "Sales", "Connected insights", "AI analyst"]
-ICONS = {"Overview": "📊", "Operations": "⚙️", "Sales": "💰", "Connected insights": "🔗", "AI analyst": "🤖"}
+ICONS = {"Overview": ":material/dashboard:", "Operations": ":material/precision_manufacturing:",
+         "Sales": ":material/trending_up:", "Connected insights": ":material/hub:",
+         "AI analyst": ":material/smart_toy:"}
 DESCRIPTIONS = {
     "Overview": "Plant health at a glance, with what needs attention first.",
     "Operations": "Machine downtime, causes and quality, worst first.",
@@ -32,21 +34,31 @@ CSS = """
 header[data-testid="stHeader"]{background:transparent}
 footer{visibility:hidden}
 .block-container{padding-top:1.2rem;padding-bottom:3rem;max-width:1400px}
-section[data-testid="stSidebar"]{background:#FFFFFF;border-right:1px solid var(--line)}
-section[data-testid="stSidebar"] .block-container{padding-top:1.4rem}
+section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
+[data-testid="stSidebarContent"]{background:#fff;margin:14px 0 14px 14px;width:calc(100% - 28px);height:calc(100vh - 28px);border:1px solid var(--line);border-radius:24px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);overflow-y:auto}
+[data-testid="stSidebarHeader"]{padding:.8rem 1rem 0;height:auto;min-height:0}
+[data-testid="stSidebarUserContent"]{padding:0 1.1rem 1.5rem}
 
-.brand{display:flex;align-items:center;gap:12px;margin-bottom:22px}
-.btile{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center}
-.bname{font-weight:700;font-size:1.2rem;color:var(--ink);line-height:1.1}
-.bsub{font-size:.62rem;letter-spacing:.14em;color:var(--muted);font-weight:500;margin-top:3px}
-.sidelabel{font-size:.68rem;letter-spacing:.14em;color:#8B96A5;font-weight:600;margin:20px 0 8px}
+.brand{display:flex;align-items:center;gap:12px;margin:2px 0 26px}
+.btile{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex:none}
+.bname{font-weight:700;font-size:1.25rem;color:var(--coral);line-height:1.1;letter-spacing:-0.01em}
+.bsub{font-size:.6rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin-top:4px;line-height:1.5}
+.sidelabel{font-size:.66rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin:22px 0 10px 4px}
 
-.st-key-nav button{width:100%;justify-content:flex-start;border:0;box-shadow:none;background:transparent;padding:.7rem .9rem;border-radius:12px;color:var(--ink)}
-.st-key-nav button:hover{background:#F3EEE9;color:var(--ink);border:0}
-.st-key-nav button > div{justify-content:flex-start;width:100%}
-.st-key-nav button p{text-align:left;font-weight:500;font-size:.95rem}
+.st-key-nav [data-testid="stVerticalBlock"]{gap:.3rem}
+.st-key-nav button{width:100%;justify-content:flex-start;border:0;box-shadow:none;background:transparent;padding:.45rem .6rem;min-height:3.1rem;border-radius:13px;color:var(--ink)}
+.st-key-nav button:hover{background:#F6F2EE;border:0;color:var(--ink)}
+.st-key-nav button > div{justify-content:flex-start;gap:.85rem;width:100%}
+.st-key-nav button [data-testid="stIconMaterial"]{background:#F1F3F6;color:#6C7A8D;border-radius:10px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;flex:none}
+.st-key-nav button p{text-align:left;font-weight:500;font-size:.95rem;margin:0}
 .st-key-nav button[kind="primary"], .st-key-nav button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:0}
+.st-key-nav button[kind="primary"] [data-testid="stIconMaterial"], .st-key-nav button[data-testid="stBaseButton-primary"] [data-testid="stIconMaterial"]{background:rgba(255,255,255,.2);color:#fff}
 .st-key-nav button[kind="primary"] p, .st-key-nav button[data-testid="stBaseButton-primary"] p{color:#fff;font-weight:600}
+
+.ucard{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-top:28px;box-shadow:0 1px 2px rgba(27,36,48,.04)}
+.uav{width:40px;height:40px;border-radius:50%;background:var(--coralbg);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
+.uname{font-weight:600;font-size:1rem;color:var(--ink);line-height:1.2}
+.urole{font-size:.6rem;letter-spacing:.16em;color:#8B96A5;font-weight:600;margin-top:2px}
 
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 2px 16px;border-bottom:1px solid var(--line);margin-bottom:24px}
 .tsmall{font-size:.82rem;color:var(--muted)}
@@ -191,7 +203,7 @@ with st.sidebar:
                 '<div class="sidelabel">NAVIGATION</div>', unsafe_allow_html=True)
     with st.container(key="nav"):
         for p_name in PAGES:
-            st.button(f"{ICONS[p_name]}  {p_name}", key=f"nav_{p_name}",
+            st.button(p_name, key=f"nav_{p_name}", icon=ICONS[p_name],
                       type="primary" if page == p_name else "secondary", on_click=go, args=(p_name,))
     st.markdown('<div class="sidelabel">DATA</div>', unsafe_allow_html=True)
     prod_file = st.file_uploader("Production file (CSV/Excel)", type=["csv", "xlsx", "xls"])
@@ -199,6 +211,9 @@ with st.sidebar:
     cat_file = st.file_uploader("Products file (optional)", type=["csv", "xlsx", "xls"])
     if st.button("Use sample data"):
         st.session_state["use_sample"] = True
+    filters_box = st.container()
+    st.markdown('<div class="ucard"><div class="uav">👤</div><div><div class="uname">Analytics track</div>'
+                '<div class="urole">TEAM WORKSPACE</div></div></div>', unsafe_allow_html=True)
 
 using_upload = bool(prod_file and sales_file)
 using_sample = (not using_upload) and st.session_state.get("use_sample", False)
@@ -240,7 +255,7 @@ production["product"] = production["product_id"].map(name_map).fillna(production
 sales["product"] = sales["product_id"].map(name_map).fillna(sales["product_id"])
 
 # ---------- Sidebar: filters ----------
-with st.sidebar:
+with filters_box:
     st.markdown('<div class="sidelabel">FILTERS</div>', unsafe_allow_html=True)
     min_d = min(production["date"].min(), sales["order_date"].min()).date()
     max_d = max(production["date"].max(), sales["order_date"].max()).date()
