@@ -107,8 +107,12 @@ with tab2:
     )
     by_machine["defect_rate_%"] = (by_machine["defective"] / by_machine["units"] * 100).round(2)
     a, b = st.columns(2)
-        worst = by_machine.sort_values("downtime_hours", ascending=False).iloc[0]
-    a.plotly_chart(px.bar(by_machine, x="machine_id", y="downtime_hours", title=f"{worst['machine_id']} has the most downtime ({worst['downtime_hours']:,.0f} hours)"), width="stretch")
+    worst = by_machine.sort_values("downtime_hours", ascending=False).iloc[0]
+    a.plotly_chart(
+        px.bar(by_machine, x="machine_id", y="downtime_hours",
+               title=f"{worst['machine_id']} has the most downtime ({worst['downtime_hours']:,.0f} hours)"),
+        width="stretch",
+    )
     reasons = prod_f[prod_f["downtime_reason"] != "None"].groupby("downtime_reason", as_index=False)["downtime_hours"].sum()
     b.plotly_chart(px.bar(reasons, x="downtime_reason", y="downtime_hours", title="Downtime by reason"), width="stretch")
     m_def = prod_f.groupby("month", as_index=False).agg(d=("defective_units", "sum"), u=("units_produced", "sum"))
@@ -235,8 +239,8 @@ with tab5:
             "factory problems affect customer delivery and revenue."
         )
 
-    res = st.session_state.get("ai_result")
+       res = st.session_state.get("ai_result")
     if res:
         st.markdown(f"**Q:** {res['q']}")
-                st.markdown(res["a"])
+        st.markdown(res["a"])
         st.download_button("⬇️ Download this insight", f"Q: {res['q']}\n\n{res['a']}", file_name="insights.txt")
