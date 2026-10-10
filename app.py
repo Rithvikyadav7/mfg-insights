@@ -1,4 +1,138 @@
+import pandas as pd
+import plotly.express as px
 import streamlit as st
 
-st.title("Hello Hackathon 🚀")
-st.write("Our manufacturing insights app is live!")
+from utils import (clean_production, clean_sales, ensure_products,
+                   generate_sample_data, lost_revenue_by_product)
+
+st.set_page_config(page_title="MfgInsights", page_icon="🏭", layout="wide")
+st.title("🏭 MfgInsights")
+st.caption("Unify factory and sales data into one dashboard, with an AI analyst.")
+
+
+def read_any(f):
+    if f.name.lower().endswith((".xlsx", ".xls")):
+        return pd.read_excel(f)
+    return pd.read_csv(f)
+
+
+# ---------- Sidebar: data ----------
+with st.sidebar:
+    st.header("1. Data")
+    prod_file = st.file_uploader("Production file (CSV/Excel)", type=["csv", "xlsx", "xls"])
+    sales_file = st.file_uploader("Sales file (CSV/Excel)", type=["csv", "xlsx", "xls"])
+    cat_file = st.file_uploader("Products file (optional)", type=["csv", "xlsx", "xls"])
+    if st.button("Use sample data"):
+        st.session_state["use_sample"] = True
+
+try:
+    if prod_file and sales_file:
+        production = clean_production(read_any(prod_file))
+        sales = clean_sales(read_any(sales_file))
+        products = ensure_products(read_any(cat_file) if cat_file else None, production, sales)
+    elif st.session_state.get("use_sample"):
+        p, s, pr = generate_sample_data()
+        production, sales = clean_production(p), clean_sales(s)
+        products = ensure_products(pr, production, sales)
+    else:
+        st.info("👈 Upload your production and sales files, or click **Use sample data** to start.")
+        st.stop()
+except ValueError as e:
+    st.error(str(e))
+    st.stop()
+
+name_map = dict(zip(products["product_id"], products["product_name"]))
+production["product"] = production["product_id"].map(name_map).fillna(production["product_id"])
+sales["product"] = sales["product_id"].map(name_map).fillna(sales["product_id"])
+
+# ---------- Sidebar: filters ----------
+with st.sidebar:
+    st.header("2. Filters")
+    min_d = min(production["date"].min(), sales["order_date"].min()).date()
+    max_d = max(production["date"].max(), sales["order_date"].max()).date()
+    date_range = st.date_input("Date range", (min_d, max_d))
+    all_products = sorted(set(production["product"]) | set(sales["product"]))
+    chosen = st.multiselect("Products", all_products, default=all_products)
+
+if len(date_range) != 2:
+    st.stop()
+start, end = pd.Timestamp(date_range[0]), pd.Timestamp(date_range[1])
+
+prod_f = production[production["date"].between(start, end) & production["product"].isin(chosen)].copy()
+sales_f = sales[sales["order_date"].between(start, end) & sales["product"].isin(chosen)].copy()
+if prod_f.empty or sales_f.empty:
+    st.warning("No data for these filters.")
+    st.stop()
+
+prod_f["month"] = prod_f["date"].dt.to_period("M").dt.to_timestamp()
+sales_f["month"] = sales_f["order_date"].dt.to_period("M").dt.to_timestamp()
+sales_f["late"] = sales_f["delivery_date"] > sales_f["promised_date"]
+
+# ---------- Metrics ----------
+units = prod_f["units_produced"].sum()
+defect_rate = prod_f["defective_units"].sum() / max(units, 1)
+availability = 1 - prod_f["downtime_hours"].sum() / max(prod_f["planned_hours"].sum(), 1)
+revenue = sales_f["revenue"].sum()
+on_time = 1 - sales_f["late"].mean()
+lost = lost_revenue_by_product(prod_f, sales_f)
+
+tab1, tab2, tab3, tab4, tab5 = st.tabs(
+    ["📊 Overview", "⚙️ Operations", "💰 Sales", "🔗 Connected Insights", "🤖 AI Analyst"]
+)
+
+with tab1:
+    c1, c2, c3, c4, c5 = st.columns(5)
+    c1.metric("Units produced", f"{units:,.0f}")
+    c2.metric("Defect rate", f"{defect_rate:.1%}")
+    c3.metric("Machine availability", f"{availability:.1%}")
+    c4.metric("Revenue", f"₹{revenue:,.0f}")
+    c5.metric("On-time delivery", f"{on_time:.1%}")
+    m_rev = sales_f.groupby("month", as_index=False)["revenue"].sum()
+    st.plotly_chart(px.line(m_rev, x="month", y="revenue", markers=True, title="Monthly revenue"), width="stretch")
+    m_units = prod_f.groupby("month", as_index=False)["units_produced"].sum()
+    st.plotly_chart(px.line(m_units, x="month", y="units_produced", markers=True, title="Monthly units produced"), width="stretch")
+
+with tab2:
+    by_machine = prod_f.groupby("machine_id", as_index=False).agg(
+        downtime_hours=("downtime_hours", "sum"),
+        defective=("defective_units", "sum"),
+        units=("units_produced", "sum"),
+    )
+    by_machine["defect_rate_%"] = (by_machine["defective"] / by_machine["units"] * 100).round(2)
+    a, b = st.columns(2)
+    a.plotly_chart(px.bar(by_machine, x="machine_id", y="downtime_hours", title="Downtime hours by machine"), width="stretch")
+    reasons = prod_f[prod_f["downtime_reason"] != "None"].groupby("downtime_reason", as_index=False)["downtime_hours"].sum()
+    b.plotly_chart(px.bar(reasons, x="downtime_reason", y="downtime_hours", title="Downtime by reason"), width="stretch")
+    m_def = prod_f.groupby("month", as_index=False).agg(d=("defective_units", "sum"), u=("units_produced", "sum"))
+    m_def["defect_rate_%"] = m_def["d"] / m_def["u"] * 100
+    st.plotly_chart(px.line(m_def, x="month", y="defect_rate_%", markers=True, title="Defect rate trend (%)"), width="stretch")
+    st.subheader("Machines needing attention")
+    st.dataframe(by_machine.sort_values("downtime_hours", ascending=False), width="stretch")
+
+with tab3:
+    a, b = st.columns(2)
+    reg = sales_f.groupby("region", as_index=False)["revenue"].sum()
+    a.plotly_chart(px.bar(reg, x="region", y="revenue", title="Revenue by region"), width="stretch")
+    top = sales_f.groupby("product", as_index=False)["revenue"].sum().sort_values("revenue", ascending=False)
+    b.plotly_chart(px.bar(top, x="product", y="revenue", title="Revenue by product"), width="stretch")
+    m_rev2 = sales_f.groupby("month", as_index=False)["revenue"].sum()
+    st.plotly_chart(
+        px.scatter(m_rev2, x="month", y="revenue", trendline="ols", title="Revenue trend with trendline"),
+        width="stretch",
+    )
+
+with tab4:
+    st.markdown("**Where factory problems hit the business.**")
+    pm = prod_f.groupby("month", as_index=False).agg(units_produced=("units_produced", "sum"))
+    sm = sales_f.groupby("month", as_index=False).agg(units_ordered=("quantity", "sum"))
+    both = pm.merge(sm, on="month", how="outer").melt("month", var_name="measure", value_name="units")
+    st.plotly_chart(px.line(both, x="month", y="units", color="measure", markers=True, title="Production vs customer orders"), width="stretch")
+    a, b = st.columns(2)
+    a.plotly_chart(px.bar(lost, x="product", y="lost_revenue", title="Estimated revenue lost to downtime (₹)"), width="stretch")
+    late = sales_f.groupby("product", as_index=False)["late"].mean()
+    late["late_%"] = late["late"] * 100
+    b.plotly_chart(px.bar(late, x="product", y="late_%", title="Late deliveries by product (%)"), width="stretch")
+    st.caption("Lost revenue = downtime hours × units per run-hour × average revenue per unit (an estimate).")
+
+with tab5:
+    st.info("AI Analyst comes in the next step.")
