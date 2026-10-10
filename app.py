@@ -36,8 +36,8 @@ try:
         p, s, pr = generate_sample_data()
         production, sales = clean_production(p), clean_sales(s)
         products = ensure_products(pr, production, sales)
-    else:
-               st.markdown("### From scattered spreadsheets to one live view")
+       else:
+        st.markdown("### From scattered spreadsheets to one live view")
         a, b, c = st.columns(3)
         a.markdown("**1️⃣ Upload**  \nDrop in your production and sales files (CSV or Excel). Column names don't have to match.")
         b.markdown("**2️⃣ Unify**  \nWe clean and merge them, then calculate defect rate, availability, on-time delivery and revenue lost to downtime.")
