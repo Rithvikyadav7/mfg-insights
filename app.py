@@ -13,6 +13,7 @@ st.set_page_config(page_title="OpsView", page_icon="🏭", layout="wide")
 INK, MUTED, LINE, GRID = "#1B2430", "#6B7787", "#EEE8E2", "#EFEAE5"
 TEAL, CORAL, NAVY = "#0F9D8A", "#E5533D", "#2B3A55"
 COLORWAY = [TEAL, NAVY, "#9FB3C8"]
+px.defaults.color_discrete_sequence = COLORWAY
 PAGES = ["Overview", "Operations", "Sales", "Connected insights", "AI analyst"]
 ICONS = {"Overview": ":material/dashboard:", "Operations": ":material/precision_manufacturing:",
          "Sales": ":material/trending_up:", "Connected insights": ":material/hub:",
@@ -34,36 +35,7 @@ CSS = """
 header[data-testid="stHeader"]{background:transparent}
 footer{visibility:hidden}
 .block-container{padding-top:1.2rem;padding-bottom:3rem;max-width:1400px}
-section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
-[data-testid="stSidebarContent"]{background:#fff;margin:14px 0 14px 14px;width:calc(100% - 28px);height:calc(100vh - 28px);border:1px solid var(--line);border-radius:24px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);overflow-y:auto}
-[data-testid="stSidebarHeader"]{padding:.8rem 1rem 0;height:auto;min-height:0}
-[data-testid="stSidebarUserContent"]{padding:0 1.1rem 1.5rem}
-
-.brand{display:flex;align-items:center;gap:12px;margin:2px 0 18px}
 .btile{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex:none}
-.bname{font-weight:700;font-size:1.25rem;color:var(--coral);line-height:1.1;letter-spacing:-0.01em}
-.bsub{font-size:.6rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin-top:4px;line-height:1.5}
-.sidelabel{font-size:.66rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin:14px 0 0 4px}
-
-.st-key-nav{gap:.15rem !important}
-.st-key-nav [data-testid="stVerticalBlock"]{gap:.15rem !important}
-.st-key-nav [data-testid="stElementContainer"], .st-key-nav .stButton{width:100% !important;margin:0;padding:0}
-.st-key-nav .stButton > button{width:100% !important;justify-content:flex-start;border:0 !important;outline:0 !important;box-shadow:none !important;background:transparent !important;padding:.3rem .55rem;min-height:2.75rem;border-radius:12px;color:#4A5A70}
-.st-key-nav .stButton > button:hover{background:#FAEDE9 !important;border:0 !important;color:var(--ink)}
-.st-key-nav .stButton > button:focus, .st-key-nav .stButton > button:active{border:0 !important;outline:0 !important;box-shadow:none !important}
-.st-key-nav .stButton > button > div{justify-content:flex-start;gap:.8rem;width:100%}
-.st-key-nav .stButton > button [data-testid="stIconMaterial"]{background:#EFF2F7;color:#6F7F96;border-radius:9px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex:none}
-.st-key-nav .stButton > button:hover [data-testid="stIconMaterial"]{background:#fff;color:var(--coral)}
-.st-key-nav .stButton > button p{text-align:left;font-weight:500;font-size:.93rem;margin:0;line-height:1.2}
-.st-key-nav .stButton > button[kind="primary"], .st-key-nav .stButton > button[data-testid="stBaseButton-primary"], .st-key-nav .stButton > button[kind="primary"]:hover, .st-key-nav .stButton > button[data-testid="stBaseButton-primary"]:hover{background:var(--teal) !important;color:#fff;border:0 !important}
-.st-key-nav .stButton > button[kind="primary"] [data-testid="stIconMaterial"], .st-key-nav .stButton > button[data-testid="stBaseButton-primary"] [data-testid="stIconMaterial"]{background:rgba(255,255,255,.2);color:#fff}
-.st-key-nav .stButton > button[kind="primary"] p, .st-key-nav .stButton > button[data-testid="stBaseButton-primary"] p{color:#fff;font-weight:600}
-
-.ucard{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;margin-top:28px;box-shadow:0 1px 2px rgba(27,36,48,.04)}
-.uav{width:40px;height:40px;border-radius:50%;background:var(--coralbg);display:flex;align-items:center;justify-content:center;font-size:1.1rem;flex:none}
-.uname{font-weight:600;font-size:1rem;color:var(--ink);line-height:1.2}
-.urole{font-size:.6rem;letter-spacing:.16em;color:#8B96A5;font-weight:600;margin-top:2px}
-
 .topbar{display:flex;justify-content:space-between;align-items:center;padding:6px 2px 16px;border-bottom:1px solid var(--line);margin-bottom:24px}
 .tsmall{font-size:.82rem;color:var(--muted)}
 .tbig{font-weight:600;font-size:1.1rem;color:var(--ink)}
@@ -71,12 +43,10 @@ section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
 .eyebrow{font-size:.72rem;letter-spacing:.16em;color:var(--coral);font-weight:600}
 .ptitle{font-weight:700;font-size:2.1rem;color:var(--ink);line-height:1.2;letter-spacing:-0.01em}
 .pdesc{color:var(--muted);font-size:.98rem;max-width:380px;text-align:right}
-
-.pill{display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:.76rem;font-weight:600;background:#F0EDEA;color:#59636F}
+.pill{white-space:nowrap;display:inline-flex;align-items:center;gap:6px;padding:3px 11px;border-radius:999px;font-size:.76rem;font-weight:600;background:#F0EDEA;color:#59636F}
 .pill.ok{background:var(--mint);color:#0B7F6F}
 .pill.bad{background:var(--coralbg);color:#C93E2A}
 .pdot{width:7px;height:7px;border-radius:50%;background:currentColor;display:inline-block}
-
 .card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);padding:18px 22px}
 .summary{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);margin-bottom:20px}
 .sleft{display:flex;align-items:center;gap:16px;padding:18px 22px}
@@ -86,7 +56,6 @@ section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
 .sstat{padding:18px 30px;border-left:1px solid var(--line)}
 .slab{font-size:.68rem;letter-spacing:.12em;color:#8B96A5;font-weight:600}
 .sval{font-size:1.02rem;font-weight:500;color:var(--ink);margin-top:4px}
-
 .kgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:16px;margin-bottom:22px}
 .khead{display:flex;justify-content:space-between;align-items:center}
 .klab{font-size:.86rem;color:var(--muted);font-weight:500}
@@ -102,32 +71,56 @@ section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
 .step-t{font-weight:600;font-size:1.1rem;color:var(--ink);margin-bottom:4px}
 .step-p{color:var(--muted);font-size:.93rem;line-height:1.5}
 .note{color:var(--muted);font-size:.9rem;margin-top:8px}
-
 [data-testid="stPlotlyChart"]{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);padding:8px 10px}
 [data-testid="stDataFrame"]{border:1px solid var(--line);border-radius:14px;overflow:hidden}
 [data-testid="stFileUploaderDropzone"]{background:#FBF9F7;border:1px dashed #DCD3CA;border-radius:14px}
+[data-testid="stMain"] .stButton > button{width:100%}
 .stButton > button{border-radius:12px;border:1px solid #E4DCD3;background:#fff;color:var(--ink);font-weight:500}
 .stButton > button:hover{border-color:var(--teal);color:var(--teal)}
 .stButton > button[kind="primary"], .stButton > button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:1px solid var(--teal)}
 @media (max-width: 1000px){.kgrid{grid-template-columns:repeat(2,1fr)}.fgrid,.steps{grid-template-columns:1fr}.phead{flex-direction:column;align-items:flex-start}.pdesc{text-align:left}.sstats{display:none}}
-
-/* ---- Sidebar type scale (Poppins, small and crisp) ---- */
-section[data-testid="stSidebar"] small, section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] span:not([data-testid="stIconMaterial"]), section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] div{font-family:'Poppins','Segoe UI',system-ui,sans-serif}
+/* ===== Font: Poppins on everything except icon glyphs ===== */
+.stApp :where(div,span,p,label,li,small,button,input,textarea,a,h1,h2,h3,h4,th,td):not([data-testid="stIconMaterial"]):not([class*="material"]){font-family:'Poppins','Segoe UI',system-ui,sans-serif}
+/* ===== Sidebar: floating white panel ===== */
+section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
+section[data-testid="stSidebar"] [data-testid="stSidebarContent"]{position:relative;background:#fff;margin:14px 0 14px 14px;width:calc(100% - 28px);height:calc(100vh - 28px);padding:0;border:1px solid var(--line);border-radius:24px;box-shadow:0 1px 2px rgba(27,36,48,.04),0 10px 28px rgba(27,36,48,.05);overflow-x:hidden;overflow-y:auto}
+section[data-testid="stSidebar"] [data-testid="stSidebarHeader"]{position:absolute;top:20px;right:10px;width:auto;height:auto;min-height:0;padding:0;z-index:20}
+section[data-testid="stSidebar"] [data-testid="stSidebarHeader"] button{color:#8B96A5}
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"]{padding:20px 6px 112px}
+section[data-testid="stSidebar"] [data-testid="stSidebarUserContent"] > div > [data-testid="stVerticalBlock"]{gap:10px}
+/* brand */
+.brand{display:flex;align-items:center;gap:12px;padding:0 34px 0 10px;margin-bottom:18px}
 section[data-testid="stSidebar"] .btile{width:40px;height:40px;font-size:1.15rem;border-radius:11px}
-section[data-testid="stSidebar"] .bname{font-size:1.08rem;font-weight:700}
-section[data-testid="stSidebar"] .bsub{font-size:.56rem;letter-spacing:.18em;font-weight:500}
-section[data-testid="stSidebar"] .sidelabel{font-size:.6rem;letter-spacing:.2em;font-weight:600}
-section[data-testid="stSidebar"] .st-key-nav .stButton > button{min-height:2.55rem;padding:.25rem .55rem;color:#55657E}
-section[data-testid="stSidebar"] .st-key-nav .stButton > button p{font-size:.86rem;font-weight:500;letter-spacing:0}
-section[data-testid="stSidebar"] .st-key-nav .stButton > button [data-testid="stIconMaterial"]{width:30px;height:30px;font-size:17px}
-section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"] p, section[data-testid="stSidebar"] .st-key-nav .stButton > button[data-testid="stBaseButton-primary"] p{font-size:.86rem;font-weight:600;color:#fff}
-section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p, section[data-testid="stSidebar"] label p{font-size:.8rem;font-weight:500;color:#55657E}
-section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button{font-size:.8rem;font-weight:500;padding:.3rem .8rem}
-section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] span, section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"] small, section[data-testid="stSidebar"] small{font-size:.7rem;color:#8B96A5}
-section[data-testid="stSidebar"] .stButton:not(.st-key-nav .stButton) > button p{font-size:.84rem;font-weight:500}
-section[data-testid="stSidebar"] input, section[data-testid="stSidebar"] [data-baseweb="select"] div{font-size:.84rem}
-section[data-testid="stSidebar"] .uname{font-size:.92rem;font-weight:600}
-section[data-testid="stSidebar"] .urole{font-size:.55rem;letter-spacing:.16em;font-weight:600}
+.bname{font-size:17px;font-weight:700;color:var(--coral);line-height:1.15;letter-spacing:-0.01em}
+.bsub{font-size:9px;letter-spacing:.16em;color:#8B96A5;font-weight:500;line-height:1.5;margin-top:3px}
+.sidelabel{font-size:10px;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin:14px 0 8px 14px;line-height:1.2}
+/* nav list: borderless rows, icon chip + label */
+section[data-testid="stSidebar"] .st-key-nav{gap:4px !important}
+section[data-testid="stSidebar"] .st-key-nav [data-testid="stElementContainer"], section[data-testid="stSidebar"] .st-key-nav .stButton{width:100% !important;margin:0;padding:0}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button{width:100% !important;min-height:48px;padding:0 12px;border:0 !important;outline:0 !important;box-shadow:none !important;background:transparent !important;border-radius:13px;color:#55657E;justify-content:flex-start}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button:hover{background:#FAEDE9 !important;color:var(--ink)}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button:focus, section[data-testid="stSidebar"] .st-key-nav .stButton > button:active{border:0 !important;outline:0 !important;box-shadow:none !important}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button > div{width:100%;justify-content:flex-start}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button > div > span{display:flex;align-items:center;justify-content:flex-start;gap:14px;width:100%}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button [data-testid="stIconMaterial"]{width:30px;height:30px;display:inline-flex;align-items:center;justify-content:center;border-radius:9px;background:#EFF2F7;color:#6F7F96;font-size:17px;flex:none}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button:hover [data-testid="stIconMaterial"]{background:#fff;color:var(--coral)}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button p{margin:0;font-size:14px;font-weight:500;line-height:1.2;text-align:left;white-space:nowrap}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"], section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"]:hover{background:var(--teal) !important;color:#fff}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"] [data-testid="stIconMaterial"]{background:rgba(255,255,255,.2);color:#fff}
+section[data-testid="stSidebar"] .st-key-nav .stButton > button[kind="primary"] p{color:#fff;font-weight:600}
+/* sidebar widgets */
+section[data-testid="stSidebar"] [data-testid="stWidgetLabel"] p{font-size:12.5px;font-weight:500;color:#55657E}
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"]{padding:10px 12px;min-height:0}
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzone"] button{font-size:12.5px;font-weight:500;padding:4px 12px}
+section[data-testid="stSidebar"] [data-testid="stFileUploaderDropzoneInstructions"]{display:none}
+section[data-testid="stSidebar"] input{font-size:13px}
+/* account card pinned to the bottom of the panel */
+.ucard{position:fixed;left:30px;bottom:30px;width:240px;z-index:30;display:flex;align-items:center;gap:12px;background:#fff;border:1px solid var(--line);border-radius:18px;padding:12px 14px;box-shadow:0 2px 10px rgba(27,36,48,.06)}
+.ufade{position:fixed;left:15px;bottom:15px;width:270px;height:130px;border-radius:0 0 24px 24px;background:linear-gradient(to bottom,rgba(255,255,255,0),#fff 55%);z-index:29;pointer-events:none}
+.uav{width:40px;height:40px;border-radius:50%;background:var(--coralbg);color:var(--coral);display:flex;align-items:center;justify-content:center;flex:none}
+.uicon{font-family:'Material Symbols Rounded';font-size:22px;font-weight:300;line-height:1}
+.uname{font-size:14.5px;font-weight:600;color:var(--ink);line-height:1.2}
+.urole{font-size:9px;letter-spacing:.16em;color:#8B96A5;font-weight:600;margin-top:2px}
 </style>
 """
 st.markdown(CSS, unsafe_allow_html=True)
@@ -138,12 +131,12 @@ def style(fig, height=360, money=False):
     fig.update_layout(
         paper_bgcolor="rgba(0,0,0,0)", plot_bgcolor="rgba(0,0,0,0)",
         font=dict(family="Poppins, Segoe UI, sans-serif", color=INK, size=13),
-        title=dict(x=0.0, xanchor="left", font=dict(size=17, color=INK)),
-        margin=dict(l=12, r=12, t=58, b=12), height=height, colorway=COLORWAY,
+        title=dict(x=0.0, xanchor="left", font=dict(family="Poppins, Segoe UI, sans-serif", size=16, color=INK)),
+        margin=dict(l=12, r=28, t=58, b=12), height=height, colorway=COLORWAY,
         legend=dict(orientation="h", y=1.1, x=1, xanchor="right", title_text=""),
         hoverlabel=dict(bgcolor="#FFFFFF", font_color=INK, bordercolor=LINE),
     )
-    fig.update_xaxes(title_text="", showgrid=False, linecolor=LINE, tickfont=dict(color=MUTED))
+    fig.update_xaxes(title_text="", showgrid=False, linecolor=LINE, tickfont=dict(color=MUTED), automargin=True)
     fig.update_yaxes(title_text="", gridcolor=GRID, zeroline=False, tickfont=dict(color=MUTED))
     if money:
         fig.update_yaxes(tickprefix="₹", tickformat="~s")
@@ -159,7 +152,7 @@ def show(fig, height=360, money=False, flag=None):
         labels, target = flag
         fig.update_traces(marker_color=[CORAL if x == target else TEAL for x in labels],
                           selector=dict(type="bar"))
-    st.plotly_chart(fig, width="stretch")
+    st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
 
 
 def pill(text, kind="info", dot=True):
@@ -228,13 +221,13 @@ with st.sidebar:
             st.button(p_name, key=f"nav_{p_name}", icon=ICONS[p_name],
                       type="primary" if page == p_name else "secondary", on_click=go, args=(p_name,))
     st.markdown('<div class="sidelabel">DATA</div>', unsafe_allow_html=True)
+    if st.button("Use sample data", type="primary", key="sample_btn"):
+        st.session_state["use_sample"] = True
     prod_file = st.file_uploader("Production file (CSV/Excel)", type=["csv", "xlsx", "xls"])
     sales_file = st.file_uploader("Sales file (CSV/Excel)", type=["csv", "xlsx", "xls"])
     cat_file = st.file_uploader("Products file (optional)", type=["csv", "xlsx", "xls"])
-    if st.button("Use sample data"):
-        st.session_state["use_sample"] = True
     filters_box = st.container()
-    st.markdown('<div class="ucard"><div class="uav">👤</div><div><div class="uname">Analytics track</div>'
+    st.markdown('<div class="ufade"></div><div class="ucard"><div class="uav"><span class="material-symbols-rounded uicon">person</span></div><div><div class="uname">Analytics track</div>'
                 '<div class="urole">TEAM WORKSPACE</div></div></div>', unsafe_allow_html=True)
 
 using_upload = bool(prod_file and sales_file)
@@ -331,14 +324,14 @@ if page == "Overview":
         '<div class="kgrid">'
         + kpi_card("🏭", "Units produced", f"{units:,.0f}", f"{len(by_machine)} machines")
         + kpi_card("⚠️", "Defect rate", f"{defect_rate:.1%}",
-                   "Within 2.5% target" if defect_rate <= 0.025 else "Above 2.5% target",
+                   "Target ≤ 2.5%",
                    "ok" if defect_rate <= 0.025 else "bad")
         + kpi_card("⚙️", "Machine availability", f"{availability:.1%}",
-                   "Above 90% target" if availability >= 0.9 else "Below 90% target",
+                   "Target ≥ 90%",
                    "ok" if availability >= 0.9 else "bad")
         + kpi_card("💰", "Revenue", f"₹{revenue:,.0f}", "Selected period")
         + kpi_card("🚚", "On-time delivery", f"{on_time:.1%}",
-                   "Above 90% target" if on_time >= 0.9 else "Below 90% target",
+                   "Target ≥ 90%",
                    "ok" if on_time >= 0.9 else "bad")
         + '</div>',
         unsafe_allow_html=True,
@@ -414,6 +407,7 @@ elif page == "Connected insights":
     pm = prod_f.groupby("month", as_index=False).agg(units_produced=("units_produced", "sum"))
     sm = sales_f.groupby("month", as_index=False).agg(units_ordered=("quantity", "sum"))
     both = pm.merge(sm, on="month", how="outer").melt("month", var_name="measure", value_name="units")
+    both["measure"] = both["measure"].map({"units_produced": "Units produced", "units_ordered": "Units ordered"})
     show(px.line(both, x="month", y="units", color="measure", markers=True, title="Production against customer orders"))
 
     total_lost = lost["lost_revenue"].sum()
@@ -500,15 +494,15 @@ else:
 
     st.caption("Answers use the data currently shown, so your filters apply.")
     examples = [
-        "Which machine is costing us the most?",
-        "Why did output drop in March 2026?",
-        "Which products are at risk of late delivery?",
-        "What should the plant manager fix first?",
+        ("Costliest machine", "Which machine is costing us the most?"),
+        ("Biggest output drop", "When did output drop the most, and what caused it?"),
+        ("Late-delivery risk", "Which products are at risk of late delivery?"),
+        ("What to fix first", "What should the plant manager fix first?"),
     ]
     cols = st.columns(len(examples))
-    for i, (col, ex) in enumerate(zip(cols, examples)):
-        if col.button(ex, key=f"ex_{i}"):
-            run(ex)
+    for i, (col, (label, question)) in enumerate(zip(cols, examples)):
+        if col.button(label, key=f"ex_{i}"):
+            run(question)
 
     typed = st.text_input("Or ask your own question", placeholder="For example: which region is growing fastest?")
     if st.button("Ask") and typed.strip():
