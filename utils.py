@@ -124,7 +124,7 @@ def generate_sample_data(seed=42):
     price = products.set_index("product_id")["unit_price"]
     qty = rng.integers(20, 300, n)
     revenue = qty * price.loc[pids].values * rng.uniform(0.95, 1.05, n)
-    delay = rng.integers(-2, 3, n)
+    delay = rng.integers(-3, 2, n)
     late_boost = (pids == "P104") | ((order_dates.year == 2026) & (order_dates.month == 3))
     delay = delay + np.where(late_boost, rng.integers(2, 7, n), 0)
     promised = order_dates + pd.to_timedelta(7, unit="D")
