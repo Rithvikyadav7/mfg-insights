@@ -39,18 +39,21 @@ section[data-testid="stSidebar"]{background:#F8F5F2;border-right:0}
 [data-testid="stSidebarHeader"]{padding:.8rem 1rem 0;height:auto;min-height:0}
 [data-testid="stSidebarUserContent"]{padding:0 1.1rem 1.5rem}
 
-.brand{display:flex;align-items:center;gap:12px;margin:2px 0 26px}
+.brand{display:flex;align-items:center;gap:12px;margin:2px 0 18px}
 .btile{width:42px;height:42px;border-radius:12px;background:var(--teal);color:#fff;font-weight:700;font-size:1.3rem;display:flex;align-items:center;justify-content:center;flex:none}
 .bname{font-weight:700;font-size:1.25rem;color:var(--coral);line-height:1.1;letter-spacing:-0.01em}
 .bsub{font-size:.6rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin-top:4px;line-height:1.5}
-.sidelabel{font-size:.66rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin:22px 0 10px 4px}
+.sidelabel{font-size:.66rem;letter-spacing:.2em;color:#8B96A5;font-weight:600;margin:14px 0 0 4px}
 
-.st-key-nav [data-testid="stVerticalBlock"]{gap:.3rem}
-.st-key-nav button{width:100%;justify-content:flex-start;border:0;box-shadow:none;background:transparent;padding:.45rem .6rem;min-height:3.1rem;border-radius:13px;color:var(--ink)}
-.st-key-nav button:hover{background:#F6F2EE;border:0;color:var(--ink)}
-.st-key-nav button > div{justify-content:flex-start;gap:.85rem;width:100%}
-.st-key-nav button [data-testid="stIconMaterial"]{background:#F1F3F6;color:#6C7A8D;border-radius:10px;width:34px;height:34px;display:inline-flex;align-items:center;justify-content:center;font-size:19px;flex:none}
-.st-key-nav button p{text-align:left;font-weight:500;font-size:.95rem;margin:0}
+.st-key-nav{gap:.2rem !important}
+.st-key-nav [data-testid="stVerticalBlock"]{gap:.2rem !important}
+.st-key-nav [data-testid="stElementContainer"], .st-key-nav .stButton{margin:0;padding:0}
+.st-key-nav button{width:100%;justify-content:flex-start;border:0;box-shadow:none;background:transparent;padding:.3rem .55rem;min-height:2.75rem;border-radius:12px;color:#4A5A70}
+.st-key-nav button:hover{background:#FAEDE9;border:0;color:var(--ink)}
+.st-key-nav button > div{justify-content:flex-start;gap:.8rem;width:100%}
+.st-key-nav button [data-testid="stIconMaterial"]{background:#EFF2F7;color:#6F7F96;border-radius:9px;width:32px;height:32px;display:inline-flex;align-items:center;justify-content:center;font-size:18px;flex:none}
+.st-key-nav button:hover [data-testid="stIconMaterial"]{background:#fff;color:var(--coral)}
+.st-key-nav button p{text-align:left;font-weight:500;font-size:.93rem;margin:0;line-height:1.2}
 .st-key-nav button[kind="primary"], .st-key-nav button[data-testid="stBaseButton-primary"]{background:var(--teal);color:#fff;border:0}
 .st-key-nav button[kind="primary"] [data-testid="stIconMaterial"], .st-key-nav button[data-testid="stBaseButton-primary"] [data-testid="stIconMaterial"]{background:rgba(255,255,255,.2);color:#fff}
 .st-key-nav button[kind="primary"] p, .st-key-nav button[data-testid="stBaseButton-primary"] p{color:#fff;font-weight:600}
