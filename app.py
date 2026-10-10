@@ -250,7 +250,7 @@ with tab5:
             "factory problems affect customer delivery and revenue."
         )
 
-       res = st.session_state.get("ai_result")
+          res = st.session_state.get("ai_result")
     if res:
         st.markdown(f"**Q:** {res['q']}")
         st.markdown(res["a"])
