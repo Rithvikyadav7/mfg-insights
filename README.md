@@ -1,3 +1,5 @@
+<img width="1917" height="906" alt="overview png" src="https://github.com/user-attachments/assets/78031e9c-3715-4838-9783-22b20f6503f7" />
+<img width="1917" height="960" alt="landing png" src="https://github.com/user-attachments/assets/bbc8ee37-0c3d-4866-a3be-140967ffb633" />
 # OpsView
 
 **Factory and sales data in one view, with an AI analyst that tells you what to fix first.**
