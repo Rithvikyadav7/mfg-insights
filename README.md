@@ -29,6 +29,29 @@ Small and mid-sized manufacturers keep production logs and sales orders in separ
 | Sales | Revenue by region and product, with a monthly trendline |
 | Connected insights | Production against customer orders, estimated revenue lost to downtime, late-delivery rate by product |
 | AI analyst | Example questions, free-text questions, and a "top 5 insights and actions" report that can be downloaded |
+## What the live app looks like
+
+On the simulated sample plant (1 Oct 2025 to 30 Sep 2026), the Overview page shows:
+
+| Measure | Value |
+|---|---|
+| Units produced | 1,323,114 across 5 machines |
+| Defect rate | 3.0% (target at or below 2.5%) |
+| Machine availability | 91.1% (target at or above 90%) |
+| Revenue | ₹32,758,085 |
+| On-time delivery | 60.8% (target at or above 90%) |
+
+The "Needs attention" row flags three planted problems:
+
+- **Downtime hotspot:** M4 lost 957 hours, the most of any machine.
+- **Quality hotspot:** M3 has a 7.0% defect rate against a plant average of 3.0%.
+- **Delivery risk:** Fuel Pump orders are 87% late, the highest rate.
+
+A badge at the top of the app states that the data is simulated.
+
+![Landing screen](landing.png)
+
+![Overview page](overview.png)
 
 ## How the metrics are calculated
 
